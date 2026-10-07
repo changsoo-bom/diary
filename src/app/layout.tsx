@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { InstallPrompt } from "./_components/install-prompt";
 import { PWARegister } from "./_components/pwa-register";
 import { QueryProvider } from "./_components/query-provider";
 import { BottomNav } from "./_components/bottom-nav";
@@ -50,6 +51,7 @@ export default function RootLayout({
           </PullToRefresh>
         </QueryProvider>
         <BottomNav />
+        <InstallPrompt />
       </body>
     </html>
   );
