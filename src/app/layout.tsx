@@ -43,6 +43,19 @@ export default function RootLayout({
   return (
     <html lang="ko" className="h-full antialiased">
       <body className="min-h-full flex flex-col">
+        {/*
+          beforeinstallprompt는 설치 요건이 갖춰지는 즉시 한 번만 발생하고 재발생하지
+          않는다. 하이드레이션 이후에 리스너를 걸면 이벤트가 이미 지나가 설치 배너가
+          영영 뜨지 않을 수 있으므로, HTML 파싱 시점에 실행되는 인라인 스크립트로
+          먼저 붙잡아 둔다. 보관해 둔 이벤트는 use-install-prompt가 인수한다.
+          (CSP는 script-src에 'unsafe-inline'을 허용한다 — next.config.ts 참고)
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__bip=e},{once:true})",
+          }}
+        />
         <Splash />
         <PWARegister />
         <QueryProvider>
