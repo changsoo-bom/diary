@@ -17,8 +17,13 @@ export const metadata: Metadata = {
     title: "Record",
   },
   icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg",
+    // SVG를 먼저 두되(지원 브라우저는 고해상도로 렌더), PNG 폴백을 반드시 남긴다 —
+    // iOS의 apple-touch-icon은 SVG를 지원하지 않아 홈 화면 아이콘이 비어 보인다.
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon-192.png", type: "image/png", sizes: "192x192" },
+    ],
+    apple: "/icon-192.png",
   },
 };
 
