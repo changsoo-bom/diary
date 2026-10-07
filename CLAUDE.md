@@ -37,7 +37,12 @@
   - **이미지 등 파일은 DB에 두지 않고 스토리지(`src/lib/storage.ts`)에**: dev=로컬 디스크(`.storage/`), prod=R2(예정). `STORAGE_DRIVER`로 전환.
 - **State**: Zustand (클라이언트 UI) + TanStack Query (서버 데이터, `src/app/_components/query-provider.tsx`)
 - **Validation**: Zod 스키마는 `src/lib/schemas/`에 정의 (도입 예정)
-- **PWA**: `src/app/manifest.ts` + `public/sw.js`(미니 서비스워커, 프로덕션에서만 등록) + `public/icon.svg`
+- **PWA**: `src/app/manifest.ts` + `public/sw.js`(미니 서비스워커, 프로덕션에서만 등록) + 아이콘
+  - 아이콘 원본은 `public/icon.svg`, 설치용 raster는 `public/icon-{192,512}.png`
+    (`node scripts/gen-icons.mjs`로 재생성). Chrome은 SVG를 PWA 설치 요건 아이콘으로
+    인정하지 않으므로 PNG가 반드시 있어야 설치 배너가 뜬다.
+  - ⚠️ 아이콘 파일을 추가하면 `src/proxy.ts`의 matcher 제외 패턴에 걸리는지 확인할 것.
+    인증 가드에 걸려 307이 되면 브라우저가 아이콘을 못 받아 설치 요건이 조용히 깨진다.
 
 > React Compiler: **활성화됨** (`next.config.ts`의 `reactCompiler: true` + `babel-plugin-react-compiler`). 수동 `useMemo`/`useCallback`은 대부분 불필요 — Rules of React를 지키면 컴파일러가 자동 메모이제이션한다.
 
