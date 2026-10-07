@@ -35,8 +35,10 @@ self.addEventListener("push", (event) => {
   event.waitUntil(
     self.registration.showNotification(title, {
       body: data.body || "",
-      icon: "/icon.svg",
-      badge: "/icon.svg",
+      // Android 알림은 SVG를 렌더하지 못한다 → raster 아이콘 사용.
+      // badge는 알파 채널만 쓰는 모노크롬 전용이라 불투명 아이콘을 넣으면 사각형으로
+      // 뭉개진다. 전용 에셋이 없으므로 지정하지 않고 시스템 기본 배지에 맡긴다.
+      icon: "/icon-192.png",
       // 같은 tag면 알림이 쌓이지 않고 갱신된다(예: 같은 사진의 좋아요)
       tag: data.tag,
       data: { url: data.url || "/" },
