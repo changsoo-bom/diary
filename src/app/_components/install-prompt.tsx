@@ -2,23 +2,26 @@
 
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
-import { requestInstall, useInstallPrompt } from "@/lib/use-install-prompt";
+import {
+  dismissInstall,
+  INSTALL_HINT,
+  requestInstall,
+  useInstallMode,
+} from "@/lib/use-install-prompt";
 
 /**
  * "홈 화면에 추가" 유도 배너.
- * 브라우저가 설치 가능하다고 알려줬을 때(beforeinstallprompt)만 나타나고,
- * 버튼을 누르면 OS 네이티브 설치 창이 열린다.
+ * 브라우저가 설치 가능하다고 알려준 경우(native)엔 버튼으로 OS 설치 창을 열고,
+ * 그 신호가 없는 환경(iOS Safari·설치 프롬프트 억제 등)에서는 브라우저 메뉴로
+ * 설치하는 방법을 안내한다(manual).
  */
 export function InstallPrompt() {
-  const prompt = useInstallPrompt();
+  const mode = useInstallMode();
   const pathname = usePathname();
-  const [dismissed, setDismissed] = useState(false);
 
-  // 설치된 PWA·미지원 브라우저(iOS Safari 등)에서는 prompt가 null이라 저절로 숨는다
-  // — standalone 중복 판별은 불필요하다(설치 후엔 이벤트가 오지 않음).
+  // 설치된 PWA·닫기를 누른 경우엔 "none"이라 저절로 숨는다.
   // 로그인 화면은 하단 탭바가 없어 배너가 떠 보이므로 BottomNav와 같은 조건으로 숨긴다.
-  if (!prompt || dismissed || pathname === "/login") return null;
+  if (mode === "none" || pathname === "/login") return null;
 
   return (
     // 하단 탭바(BottomNav) 바로 위에 띄운다
@@ -33,20 +36,22 @@ export function InstallPrompt() {
         />
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-text">홈 화면에 추가</p>
-          <p className="truncate text-xs text-text-muted">
-            앱처럼 바로 열 수 있어요
+          <p className="text-xs leading-snug text-text-muted">
+            {mode === "native" ? "앱처럼 바로 열 수 있어요" : INSTALL_HINT}
           </p>
         </div>
+        {mode === "native" && (
+          <button
+            type="button"
+            onClick={() => void requestInstall()}
+            className="shrink-0 rounded-full px-4 py-2 text-sm font-medium text-bg bg-primary transition-opacity hover:opacity-80"
+          >
+            설치
+          </button>
+        )}
         <button
           type="button"
-          onClick={() => void requestInstall()}
-          className="shrink-0 rounded-full px-4 py-2 text-sm font-medium text-bg bg-primary transition-opacity hover:opacity-80"
-        >
-          설치
-        </button>
-        <button
-          type="button"
-          onClick={() => setDismissed(true)}
+          onClick={dismissInstall}
           aria-label="설치 안내 닫기"
           className="shrink-0 p-1 text-text-muted transition-opacity hover:opacity-60"
         >
